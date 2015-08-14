@@ -12,16 +12,16 @@ And if your favorite web framework happens to be Django, which is one of the mos
 
 InstaDjango takes care of:
 
-* **virtualenv**: as a standard practice, your app is installed into its own virtual environment
-* **uWSGI**: this communication layer between the web server and Django, which is recommended by Django developers, is installed and configured for your app automatically, providing you with easy ways to start up, shut down, and restart uWSGI
-* **your app's requirements**
-* **directory structures**: the files of your app are conveniently organized according to a highly reputable "[Two Scoops of Django: Best Practices for Django](http://twoscoopspress.org/products/two-scoops-of-django-1-8)"
-* **deployment profiles**: app requirements and setting are split and logically chained to let you deploy your app for local development, production, staging (pre-production), or testing
-* **your initial local copy of the app**: ready to slide under source control, the locally stored directory of your app reflects the relevant files in the remote directory on your server
-* **secret key and password security**: unlike with manual installation, the very sensible information such as your app's secret key and your database's password are stored as environment variables in the virtual environment of your app on the server instead of any of the settings file and thereby escape getting accidentally published via source control/collaboration
-* **synchronization**: the locally baked rsync-based scripts let you push changes from your local directory into the remote directory and, for example after creating a Django sub-app remotely, pull changes from the remote directory into the local one
-* **SSH-ing directly into the app's virtual environment**: no need to first SSH into the server, then go into the app's directory, and then manually activate the virtual environment because a locally prepared script will happily do this all for you
-* **Sublime Text integration**: InstaDjango assumes that you are a cool person already using one of the best Python IDEs for your app development, namely Sublime Text powered with Anaconda, so it generates a Sublime Text project pre-configured to push changed into your app's remote directory and restart uWSGI when you simply build the project
+* **virtualenv**: as a standard practice, your app is installed into its own virtual environment.
+* **uWSGI**: this communication layer between the web server and Django, which is recommended by Django developers, is installed and configured for your app automatically, providing you with easy ways to start up, shut down, and restart uWSGI.
+* **Your app's requirements**.
+* **Directory structures**: the files of your app are conveniently organized according to a highly reputable "[Two Scoops of Django: Best Practices for Django](http://twoscoopspress.org/products/two-scoops-of-django-1-8)".
+* **Deployment profiles**: app requirements and setting are split and logically chained to let you deploy your app for local development, production, staging (pre-production), or testing.
+* **Your initial local copy of the app**: ready to slide under source control, the locally stored directory of your app reflects the relevant files in the remote directory on your server.
+* **Secret key and password security**: unlike with manual installation, the very sensible information such as your app's secret key and your database's password are stored as environment variables in the virtual environment of your app on the server instead of any of the settings file and thereby escape getting accidentally published via source control.
+* **Synchronization**: the locally baked rsync-based scripts let you push changes from your local directory into the remote directory and, for example after creating a Django sub-app remotely, pull changes from the remote directory into the local one.
+* **SSH-ing directly into the app's virtual environment**: no need to first SSH into the server, then go into the app's directory, and then manually activate the virtual environment because a locally prepared script will happily do this all for you.
+* **Sublime Text integration**: InstaDjango assumes that you are a cool person already using one of the best Python IDEs for your app development, namely Sublime Text powered with Anaconda, so it generates a Sublime Text project pre-configured to push changed into your app's remote directory and restart uWSGI when you simply build the project.
 
 ## Usage
 
@@ -31,9 +31,9 @@ Before letting it go, make sure that the parent directory where you want the app
 
 The domain info is primarily needed for an entry in the Django settings that restricts the app to a specific domain when running in production with `DEBUG` being `false`.
 
-If you are more used to a more straightforward approach to editing source files by means of an FTP/SCP client, for example Cyberduck, instead of using rsync, just remove the local directory and you're done (the remote directory is meant to be a superset of the local one).
+If you are more used to a more straightforward approach to editing source files by means of an FTP/SCP client instead of rsync, just remove the local directory and you're done (the remote directory is meant to be a superset of the local one).
 
-When SSH-ed into the app's remote directory (with [AppShell].command), you can run
+When SSH-ed into the app's remote directory (with `[AppShell].command`), you can run
 
 ```sh
 ./u
