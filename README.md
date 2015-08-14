@@ -1,6 +1,6 @@
 # InstaDjango
 
-Some web app ideas just can't wait. All you want to do is to start developing ASAP without going through a tedious and potentially erroneous installation process of your web framework.
+Some web app ideas just can't wait another day, hour, or even minute. All you want to do is to start developing ASAP without going through a tedious and potentially erroneous installation process of your web framework.
 
 And if your favorite web framework happens to be Django, which is one of the most proficiently crafted and easy to use frameworks there are, InstaDjango might be exactly what you need to spin up a Django server in the matter of seconds.
 
@@ -32,6 +32,22 @@ Before letting it go, make sure that the parent directory where you want the app
 The domain info is primarily needed for an entry in the Django settings that restricts the app to a specific domain when running in production with `DEBUG` being `false`.
 
 If you are more used to a more straightforward approach to editing source files by means of an FTP/SCP client, for example Cyberduck, instead of using rsync, just remove the local directory and you're done (the remote directory is meant to be a superset of the local one).
+
+When SSH-ed into the app's remote directory (with [AppShell].command), you can run
+
+```sh
+./u
+```
+
+which does the same as running `uwsgi/up` and starts up uWSGI for the first time.
+
+And you can use
+
+```sh
+. s
+```
+
+to activate the app's virtual environment e.g. if you needed to deactivate it for some reason.
 
 After InstaDjango has finished, your app's local directory should look similar to the following structure:
 
