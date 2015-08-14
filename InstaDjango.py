@@ -67,7 +67,7 @@ sync_excl = (
     "--exclude={proj}_venv --exclude=staticroot --exclude=migrations --exclude=__pycache__ "
     "--exclude=.DS_Store")
 
-sync_script_fn = "[Sync].command"
+sync_script_fn = "[Push].command"
 sync_script = """
     #!/bin/bash
 
@@ -110,7 +110,7 @@ restart_uwsgi_script = """
     EOF
 """
 
-sync_back_script_fn = "[SyncBack].command"
+sync_back_script_fn = "[Pull].command"
 sync_back_script = """
     #!/bin/bash
 
