@@ -50,7 +50,7 @@ req_production = """
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Top-level shell scripts.
 
-server_shell_script_fn = "[DjangoShell].command"
+server_shell_script_fn = "[AppShell].command"
 server_shell_script = """
     #!/bin/bash
 
@@ -686,7 +686,7 @@ class MainFrame(Frame):
 
         subframe_0 = Frame(frame, relief=FLAT, borderwidth=0)
         subframe_0.pack(fill=X)
-        lbl_0 = Label(subframe_0, text="Project's name (used for naming folders locally and remotely):", style="TLabel")
+        lbl_0 = Label(subframe_0, text="App's simplified name (used for naming folders locally and remotely):", style="TLabel")
         lbl_0.pack(fill=BOTH, padx=10, pady=10)
         entry_0 = Entry(subframe_0)
         entry_0.pack(fill=X, padx=10, ipady=5)
@@ -695,7 +695,7 @@ class MainFrame(Frame):
         subframe_1 = Frame(frame, relief=FLAT, borderwidth=0)
         subframe_1.pack(fill=X)
         lbl_1 = Label(
-            subframe_1, text="Where to create the project's folder locally:", style="TLabel")
+            subframe_1, text="Where to create the app's folder locally:", style="TLabel")
         lbl_1.pack(fill=BOTH, padx=10, pady=10)
         entry_1 = Entry(subframe_1)
 
@@ -754,7 +754,7 @@ class MainFrame(Frame):
         subframe_6 = Frame(frame, relief=FLAT, borderwidth=0)
         subframe_6.pack(fill=X)
         lbl_6 = Label(
-            subframe_6, text="Where to create the project's folder remotely (mind permissions):", style="TLabel")
+            subframe_6, text="Where to create the app's folder remotely (should not be owned by root):", style="TLabel")
         lbl_6.pack(fill=BOTH, padx=10, pady=10)
         entry_6 = Entry(subframe_6)
         entry_6.pack(fill=X, padx=10, ipady=5)
@@ -786,7 +786,7 @@ class MainFrame(Frame):
 
         subframe_10 = Frame(frame, relief=FLAT, borderwidth=0)
         subframe_10.pack(fill=X)
-        lbl_10 = Label(subframe_10, text="Installation type (local, production, staging):", style="TLabel")
+        lbl_10 = Label(subframe_10, text="Django installation type (local, production, staging):", style="TLabel")
         lbl_10.pack(fill=BOTH, padx=10, pady=10)
         entry_10 = Entry(subframe_10)
         entry_10.pack(fill=X, padx=10, ipady=5)
