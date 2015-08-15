@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 
 
-# Targeting Ubuntu/Debian with PostgreSQL remotely and OS X locally.
-
-
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Versions.
 
@@ -65,7 +62,7 @@ server_shell_script = """
 
 sync_excl = (
     "--exclude={proj}_venv --exclude=staticroot --exclude=migrations --exclude=__pycache__ "
-    "--exclude=.DS_Store")
+    "--exclude=uwsgi/pid --exclude=uwsgi/uwsgi.log --exclude=.DS_Store")
 
 sync_script_fn = "[Push].command"
 sync_script = """
@@ -135,9 +132,9 @@ sublime_project = """
         "build_systems":
         [
             {{
-                "name": "Anaconda Python Builder",
+                "name": "{proj} Python Builder",
                 "selector": "source.python",
-                "shell_cmd": "/bin/bash {local_dir}/%s && /bin/bash {local_dir}/%s ; sshkey={ssh_key} ; ssh -i \\\\$sshkey -p {port} {user_host} 'echo -e --------------------------------\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n ; curl -s {domain}'"
+                "shell_cmd": "/bin/bash {local_dir}/%s && /bin/bash {local_dir}/%s ; sshkey={ssh_key} ; ssh -i \\\\$sshkey -p {port} {user_host} 'echo -e --------------------------------\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n'"
             }}
         ],
         "folders":
@@ -443,7 +440,8 @@ def setup_django_project(**kwargs):
     if not ssh_key:
         script = script.replace(port_substr, "")
     script = script.\
-        format(port=port,
+        format(proj=proj,
+               port=port,
                ssh_key=ssh_key,
                user_host=user_host,
                domain=domain,
