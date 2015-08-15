@@ -146,7 +146,8 @@ sublime_project = """
         ]
     }}
 """ % (sync_script_fn, restart_uwsgi_script_fn)
-# "shell_cmd": "/bin/bash {local_dir}/%s && /bin/bash {local_dir}/%s ; sshkey={ssh_key} ; ssh -i \\\\$sshkey -p {port} {user_host} 'echo -e --------------------------------\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n' && curl -s {domain}"
+# Alternatively: sync, restart uWSGI, and output the server's response into Sublime Text
+# "shell_cmd": "/bin/bash {local_dir}/%s && /bin/bash {local_dir}/%s ; echo -e '--------------------------------\\\\n' ; curl -s {domain} ; echo -e '\\\\n\\\\n--------------------------------'"
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
