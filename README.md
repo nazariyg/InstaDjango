@@ -78,7 +78,6 @@ You don't get the directory for static files locally either because static files
 
 * OS X with Python 3 locally.
 * An Ubuntu/Debian server with Python 3 and PIP remotely.
-* A web server, such as Nginx. The configured uWSGI port is expected to be 8800.
-* PostgreSQL for your server's database (MySQL support might be added with time).
+* A web server, such as Nginx, with Memcached. The configured uWSGI port is expected to be 8800.
+* PostgreSQL for your server's database with postgresql-server-dev-<your PostgreSQL version> (MySQL support might be added with time).
 * SSH access to the server using a private key and with the passphrase already in the OS X's keychain (if any).
-* If you've got Sublime Text, [Anaconda](https://github.com/DamnWidget/anaconda) is to make your Python development more comfortable as well as to facilitate your app's builds with the generated Sublime Text project.
