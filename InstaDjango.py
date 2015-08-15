@@ -134,7 +134,7 @@ sublime_project = """
             {{
                 "name": "{proj} Python Builder",
                 "selector": "source.python",
-                "shell_cmd": "/bin/bash {local_dir}/%s && /bin/bash {local_dir}/%s ; sshkey={ssh_key} ; ssh -i \\\\$sshkey -p {port} {user_host} 'echo -e --------------------------------\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n'"
+                "shell_cmd": "/bin/bash {local_dir}/%s && /bin/bash {local_dir}/%s"
             }}
         ],
         "folders":
@@ -146,6 +146,7 @@ sublime_project = """
         ]
     }}
 """ % (sync_script_fn, restart_uwsgi_script_fn)
+# "shell_cmd": "/bin/bash {local_dir}/%s && /bin/bash {local_dir}/%s ; sshkey={ssh_key} ; ssh -i \\\\$sshkey -p {port} {user_host} 'echo -e --------------------------------\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n\\\\\\\\\\\\\\\\n' && curl -s {domain}"
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
