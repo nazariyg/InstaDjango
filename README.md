@@ -21,7 +21,7 @@ InstaDjango takes care of:
 * **Secret key and password security**: unlike with manual installation, the sensitive information such as your app's secret key and your database's password are stored as environment variables in the virtual environment of your app on the server and not in the app's settings, thereby escaping the possibility of getting accidentally published (via Git).
 * **Synchronization**: the generated rsync-based local scripts let you push changes from your local directory into the remote directory and, e.g. after managing your Django instance remotely, pull changes from the remote directory into the local one.
 * **SSH-ing directly into the app's virtual environment**: no need to first SSH into the server, then go into the app's directory, and then manually activate the virtual environment because a locally prepared script will happily do this all for you.
-* **Sublime Text integration**: InstaDjango assumes that you are a cool person already using one of the best Python IDEs for your app development, namely Sublime Text powered with [Anaconda](https://github.com/DamnWidget/anaconda), so it generates a Sublime Text project pre-configured to push changes into your app's remote directory and to restart uWSGI whenever you build the project.
+* **Sublime Text integration**: InstaDjango assumes that you are a cool person already using one of the best Python IDEs for your app development, namely Sublime Text powered by [Anaconda](https://github.com/DamnWidget/anaconda), so it generates a Sublime Text project pre-configured to push changes into your app's remote directory and to restart uWSGI whenever you build the project.
 
 ## Usage
 
