@@ -79,5 +79,5 @@ You don't get the directory for static files locally either because static files
 * OS X with Python 3 locally.
 * An Ubuntu/Debian server with Python 3 and PIP remotely.
 * A web server, such as Nginx, with Memcached. The configured uWSGI port is expected to be 8800.
-* PostgreSQL for your server's database with postgresql-server-dev-<your PostgreSQL version> (MySQL support might be added with time).
+* PostgreSQL for your server's database with postgresql-server-dev-*postgresql_ver* (MySQL support might be added with time).
 * SSH access to the server using a private key and with the passphrase already in the OS X's keychain (if any).
