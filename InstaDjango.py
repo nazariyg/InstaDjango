@@ -61,7 +61,7 @@ server_shell_script = """
 """
 
 sync_excl = (
-    "--exclude={proj}_venv --exclude=staticroot --exclude=migrations --exclude=__pycache__ "
+    "--exclude={proj}_venv --exclude=__pycache__ --exclude=staticroot --exclude=migrations "
     "--exclude=uwsgi/pid --exclude=uwsgi/uwsgi.log --exclude=.DS_Store")
 
 sync_script_fn = "[Push].command"
@@ -119,7 +119,6 @@ sync_back_script = """
     sshkey={ssh_key}
 
     syncexcl="%s"
-    /bin/bash $dstparent/%s && \\
     rsync -az $syncexcl -e "ssh -i $sshkey -p $srcport" $srcuserhost:$src $dstparent
 """ % (sync_excl, sync_script_fn)
 
