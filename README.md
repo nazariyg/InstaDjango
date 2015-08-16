@@ -59,12 +59,12 @@ At the root of the app's directory, `nice_app`, you can see the app's main modul
 
 Let's go over the shell scripts that are located outside of the app's local directory:
 
-* **[AppShell].command** is for SSH-ing into the server's shell with the working directory changed to the app's remote directory and with the app's virtual environment already activated for you.
-* **[MakeMigrations].command** is for pushing the changes to the server, running `python manage.py makemigrations`, and pulling the changes from the server.
-* **[MakeMigrationsAndMigrate].command** is for pushing the changes to the server, running `python manage.py makemigrations && python manage.py migrate`, and pulling the changes from the server.
-* **[Push].command** is for pushing changes from the local directory into the remote one. You may consider running `[RestartUwsgi].command` thereafter or simply joining the two scripts together.
-* **[Pull].command** is for pulling changes from the remote directory into the local one.
-* **[RestartUwsgi].command** is for restarting uWSGI on the server for the changes to Django files to take effect.
+* **`[AppShell].command`** is for SSH-ing into the server's shell with the working directory changed to the app's remote directory and with the app's virtual environment already activated for you.
+* **`[MakeMigrations].command`** is for pushing the changes to the server, running `python manage.py makemigrations`, and pulling the changes from the server.
+* **`[MakeMigrationsAndMigrate].command`** is for pushing the changes to the server, running `python manage.py makemigrations && python manage.py migrate`, and pulling the changes from the server.
+* **`[Push].command`** is for pushing changes from the local directory into the remote one. You may consider running `[RestartUwsgi].command` thereafter or simply joining the two scripts together.
+* **`[Pull].command`** is for pulling changes from the remote directory into the local one.
+* **`[RestartUwsgi].command`** is for restarting uWSGI on the server for the changes to Django files to take effect.
 
 So when you need to make changes to your app while on the server, e.g. add a new Django app to your web app, you first sync by pushing your local state to the server or by building the Sublime Text project, then make the changes to the app's files on the server, and then pull the changes to your local machine.
 
