@@ -101,7 +101,7 @@ restart_uwsgi_script = """
 
     ssh -i $sshkey -p $dstport $dstuserhost <<EOF
         cd $dst/uwsgi
-        source ../{proj}_venv/bin/activate
+        . ../{proj}_venv/bin/activate
         ./re
         deactivate
     EOF
@@ -322,7 +322,7 @@ uwsgi_restart = """
 # Aux scripts.
 
 s_script = """
-    source {proj}_venv/bin/activate
+    . {proj}_venv/bin/activate
 """
 
 u_script = """
@@ -557,7 +557,7 @@ def setup_django_project(**kwargs):
         echo -e {sudo_pass} | sudo -S pip3 install virtualenv
         cd {remote_dir}
         virtualenv {proj}_venv
-        source {proj}_venv/bin/activate
+        . {proj}_venv/bin/activate
         pip install -r requirements/{insta_type}.txt
         django-admin startproject {proj} .
         mkdir staticroot
