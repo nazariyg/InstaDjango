@@ -49,7 +49,7 @@ req_production = """
 
 server_shell_script_fn = "[AppShell].command"
 server_shell_script = """
-    #!/bin/bash
+    #!/bin/bash -e
 
     sshkey={ssh_key}
 
@@ -61,12 +61,12 @@ server_shell_script = """
 """
 
 sync_excl = (
-    "--exclude={proj}_venv --exclude=__pycache__ --exclude=staticroot --exclude=migrations "
+    "--exclude={proj}_venv --exclude=__pycache__ --exclude=staticroot "
     "--exclude=uwsgi/pid --exclude=uwsgi/uwsgi.log --exclude=.DS_Store")
 
 sync_script_fn = "[Push].command"
 sync_script = """
-    #!/bin/bash
+    #!/bin/bash -e
 
     src={local_subdir}
     sshkey={ssh_key}
@@ -91,7 +91,7 @@ sync_script = """
 
 restart_uwsgi_script_fn = "[RestartUwsgi].command"
 restart_uwsgi_script = """
-    #!/bin/bash
+    #!/bin/bash -e
 
     sshkey={ssh_key}
 
@@ -109,7 +109,7 @@ restart_uwsgi_script = """
 
 sync_back_script_fn = "[Pull].command"
 sync_back_script = """
-    #!/bin/bash
+    #!/bin/bash -e
 
     src={remote_dir}
     srcuserhost={user_host}
@@ -120,7 +120,53 @@ sync_back_script = """
 
     syncexcl="%s"
     rsync -az $syncexcl -e "ssh -i $sshkey -p $srcport" $srcuserhost:$src $dstparent
-""" % (sync_excl, sync_script_fn)
+""" % (sync_excl)
+
+make_migrations_script_fn = "[MakeMigrations].command"
+make_migrations_script = """
+    #!/bin/bash -e
+
+    srcparent={local_dir}
+    sshkey={ssh_key}
+
+    dst={remote_dir}
+    dstuserhost={user_host}
+    dstport={port}
+
+    $srcparent/%s
+
+    ssh -i $sshkey -p $dstport $dstuserhost <<EOF
+        cd $dst
+        . {proj}_venv/bin/activate
+        python manage.py makemigrations
+        deactivate
+    EOF
+
+    $srcparent/%s
+""" % (sync_script_fn, sync_back_script_fn)
+
+make_migrations_and_migrate_script_fn = "[MakeMigrationsAndMigrate].command"
+make_migrations_and_migrate_script = """
+    #!/bin/bash -e
+
+    srcparent={local_dir}
+    sshkey={ssh_key}
+
+    dst={remote_dir}
+    dstuserhost={user_host}
+    dstport={port}
+
+    $srcparent/%s
+
+    ssh -i $sshkey -p $dstport $dstuserhost <<EOF
+        cd $dst
+        . {proj}_venv/bin/activate
+        python manage.py makemigrations && python manage.py migrate
+        deactivate
+    EOF
+
+    $srcparent/%s
+""" % (sync_script_fn, sync_back_script_fn)
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -449,6 +495,32 @@ def setup_django_project(**kwargs):
                proj=proj)
     with open(path.join(proj_local_dir, sync_back_script_fn), "w") as f:
         f.write(script)
+    #
+    script = prepare_from_4s_formatting(make_migrations_script)
+    if not ssh_key:
+        script = script.replace(port_substr, "")
+    script = script.\
+        format(local_dir=proj_local_dir,
+               ssh_key=ssh_key,
+               remote_dir=proj_remote_dir,
+               user_host=user_host,
+               port=port,
+               proj=proj)
+    with open(path.join(proj_local_dir, make_migrations_script_fn), "w") as f:
+        f.write(script)
+    #
+    script = prepare_from_4s_formatting(make_migrations_and_migrate_script)
+    if not ssh_key:
+        script = script.replace(port_substr, "")
+    script = script.\
+        format(local_dir=proj_local_dir,
+               ssh_key=ssh_key,
+               remote_dir=proj_remote_dir,
+               user_host=user_host,
+               port=port,
+               proj=proj)
+    with open(path.join(proj_local_dir, make_migrations_and_migrate_script_fn), "w") as f:
+        f.write(script)
 
     # Sublime Text project.
     script = prepare_from_4s_formatting(sublime_project)
@@ -465,7 +537,13 @@ def setup_django_project(**kwargs):
         f.write(script)
 
     chmod_script_fns = (
-        server_shell_script_fn, sync_script_fn, restart_uwsgi_script_fn, sync_back_script_fn)
+        server_shell_script_fn,
+        sync_script_fn,
+        restart_uwsgi_script_fn,
+        sync_back_script_fn,
+        make_migrations_script_fn,
+        make_migrations_and_migrate_script_fn,
+    )
     for script_fn in chmod_script_fns:
         script_fp = path.join(proj_local_dir, script_fn)
         call("chmod a+x {}".format(script_fp), shell=True)
@@ -699,7 +777,7 @@ class MainFrame(Frame):
 
         subframe_0 = Frame(frame, relief=FLAT, borderwidth=0)
         subframe_0.pack(fill=X)
-        lbl_0 = Label(subframe_0, text="App's simplified name (used for naming folders locally and remotely):", style="TLabel")
+        lbl_0 = Label(subframe_0, text="App's machine-readable name (used for naming folders locally and remotely):", style="TLabel")
         lbl_0.pack(fill=BOTH, padx=10, pady=10)
         entry_0 = Entry(subframe_0)
         entry_0.pack(fill=X, padx=10, ipady=5)
