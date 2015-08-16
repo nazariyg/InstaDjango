@@ -64,6 +64,8 @@ Let's go over the shell scripts that are located outside of the app's local dire
 * **[Pull].command** is for pulling changes from the remote directory into the local one.
 * **[RestartUwsgi].command** is for restarting uWSGI on the server for the changes to Django files to take effect.
 
+So when you need to make changes to your app while on the server, e.g. add a new Django app to your web app, you first sync by pushing your local state to the server, then make the changes to the app's files on the server, and then pull the changes to your local machine.
+
 Now, let's compare the local structure to that of the app's remote directory:
 
 <p align="center">
