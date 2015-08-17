@@ -19,7 +19,7 @@ InstaDjango takes care of:
 * **Deployment profiles**: the app's requirements and settings are split and logically chained to let you deploy for local development, production, staging (pre-production), or testing.
 * **App's local directory**: ready to slide under a source control system, such as Git, the locally stored directory of your app reflects the relevant files located inside the remote directory on your server.
 * **Secret key and password security**: unlike with manual installation, the sensitive information such as your app's secret key and your database's password are stored as environment variables in the virtual environment of your app on the server and not in the app's settings, thereby escaping the possibility of getting accidentally published (via Git).
-* **Synchronization**: the generated rsync-based local scripts let you push changes from your local directory into the remote directory and, e.g. after managing your Django instance remotely, pull changes from the remote directory into the local one.
+* **Synchronization**: the generated rsync-based local scripts let you push changes from your local directory into the remote directory and, after managing your Django instance remotely, pull changes from the remote directory into the local one. The generated `[AppShell].command`, lets you push the changes to the server, make any changes you need on the server while in the server's shell (with the app's virtual environment activated automatically), and pull the changes to your local machine, all thanks to one extremely convenient script.
 * **SSH-ing directly into the app's virtual environment**: no need to first SSH into the server, then go into the app's directory, and then manually activate the virtual environment because a locally prepared script will happily do this all for you.
 * **Sublime Text integration**: InstaDjango assumes that you are a cool person already using one of the best Python IDEs for your app development, namely Sublime Text powered by [Anaconda](https://github.com/DamnWidget/anaconda), so it generates a Sublime Text project pre-configured to push changes into your app's remote directory and to restart uWSGI whenever you build the project.
 
@@ -59,14 +59,12 @@ At the root of the app's directory, `nice_app`, you can see the app's main modul
 
 Let's go over the shell scripts that are located outside of the app's local directory:
 
-* **`[AppShell].command`** is for SSH-ing into the server's shell with the working directory changed to the app's remote directory and with the app's virtual environment already activated for you.
+* **`[AppShell].command`** is for pushing the changes to the server, SSH-ing into the server's shell with the working directory changed to the app's remote directory and with the app's virtual environment already activated for you, and pulling any changes you make on the server after you are done with the shell (<kbd>Ctrl</kbd>+<kbd>D</kbd>).
 * **`[MakeMigrations].command`** is for pushing the changes to the server, running `python manage.py makemigrations`, and pulling the changes from the server.
 * **`[MakeMigrationsAndMigrate].command`** is for pushing the changes to the server, running `python manage.py makemigrations && python manage.py migrate`, and pulling the changes from the server.
 * **`[Push].command`** is for pushing changes from the local directory into the remote one. You may consider running `[RestartUwsgi].command` thereafter or simply joining the two scripts together.
 * **`[Pull].command`** is for pulling changes from the remote directory into the local one.
 * **`[RestartUwsgi].command`** is for restarting uWSGI on the server for the changes to Django files to take effect.
-
-So when you need to make changes to your app while on the server, e.g. add a new Django app to your web app, you first sync by pushing your local state to the server or by building the Sublime Text project, then make the changes to the app's files on the server, and then pull the changes to your local machine.
 
 Now, let's compare the local structure to that of the app's remote directory:
 

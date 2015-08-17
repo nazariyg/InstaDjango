@@ -47,19 +47,6 @@ req_production = """
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Top-level shell scripts.
 
-server_shell_script_fn = "[AppShell].command"
-server_shell_script = """
-    #!/bin/bash -e
-
-    sshkey={ssh_key}
-
-    dst={remote_dir}
-    dstuserhost={user_host}
-    dstport={port}
-
-    ssh -i $sshkey -p $dstport -t $dstuserhost "cd $dst ; echo '. ~/.bashrc ; . s ; rm tmpbashrc ; clear' > tmpbashrc ; /bin/bash --rcfile tmpbashrc"
-"""
-
 sync_excl = (
     "--exclude={proj}_venv --exclude=__pycache__ --exclude=staticroot "
     "--exclude=uwsgi/pid --exclude=uwsgi/uwsgi.log --exclude=.DS_Store")
@@ -164,6 +151,24 @@ make_migrations_and_migrate_script = """
         python manage.py makemigrations && python manage.py migrate
         deactivate
     EOF
+
+    $srcparent/%s
+""" % (sync_script_fn, sync_back_script_fn)
+
+server_shell_script_fn = "[AppShell].command"
+server_shell_script = """
+    #!/bin/bash -e
+
+    srcparent={local_dir}
+    sshkey={ssh_key}
+
+    dst={remote_dir}
+    dstuserhost={user_host}
+    dstport={port}
+
+    $srcparent/%s
+
+    ssh -i $sshkey -p $dstport -t $dstuserhost "cd $dst ; echo '. ~/.bashrc ; . s ; rm tmpbashrc ; clear' > tmpbashrc ; /bin/bash --rcfile tmpbashrc"
 
     $srcparent/%s
 """ % (sync_script_fn, sync_back_script_fn)
@@ -445,17 +450,6 @@ def setup_django_project(**kwargs):
     port_substr = " -i $sshkey"
 
     # Shell scripts.
-    script = prepare_from_4s_formatting(server_shell_script)
-    if not ssh_key:
-        script = script.replace(port_substr, "")
-    script = script.\
-        format(ssh_key=ssh_key,
-               remote_dir=proj_remote_dir,
-               user_host=user_host,
-               port=port)
-    with open(path.join(proj_local_dir, server_shell_script_fn), "w") as f:
-        f.write(script)
-    #
     script = prepare_from_4s_formatting(sync_script)
     if not ssh_key:
         script = script.replace(port_substr, "")
@@ -521,6 +515,18 @@ def setup_django_project(**kwargs):
                proj=proj)
     with open(path.join(proj_local_dir, make_migrations_and_migrate_script_fn), "w") as f:
         f.write(script)
+    #
+    script = prepare_from_4s_formatting(server_shell_script)
+    if not ssh_key:
+        script = script.replace(port_substr, "")
+    script = script.\
+        format(local_dir=proj_local_dir,
+               ssh_key=ssh_key,
+               remote_dir=proj_remote_dir,
+               user_host=user_host,
+               port=port)
+    with open(path.join(proj_local_dir, server_shell_script_fn), "w") as f:
+        f.write(script)
 
     # Sublime Text project.
     script = prepare_from_4s_formatting(sublime_project)
@@ -537,12 +543,12 @@ def setup_django_project(**kwargs):
         f.write(script)
 
     chmod_script_fns = (
-        server_shell_script_fn,
         sync_script_fn,
         restart_uwsgi_script_fn,
         sync_back_script_fn,
         make_migrations_script_fn,
         make_migrations_and_migrate_script_fn,
+        server_shell_script_fn,
     )
     for script_fn in chmod_script_fns:
         script_fp = path.join(proj_local_dir, script_fn)
