@@ -60,8 +60,8 @@ At the root of the app's directory, `nice_app`, you can see the app's main modul
 Let's go over the shell scripts that are located outside of the app's local directory:
 
 * **`[AppShell].command`** is for pushing the changes to the server, SSH-ing into the server's shell with the working directory changed to the app's remote directory and with the app's virtual environment already activated for you, and pulling any changes you make on the server after you are done with the shell (<kbd>Ctrl</kbd>+<kbd>D</kbd>). This script is meant to be run separate from editing your app's files locally so avoid keeping the app's shell of this script continuosly open in Terminal while modifying the source.
-* **`[MakeMigrations].command`** is for pushing the changes to the server, running `python manage.py makemigrations`, and pulling the changes from the server.
-* **`[MakeMigrationsAndMigrate].command`** is for pushing the changes to the server, running `python manage.py makemigrations && python manage.py migrate`, and pulling the changes from the server.
+* **`[MakeMigrations].command`** is for pushing the changes to the server, running `python manage.py makemigrations`, and pulling the changes from the server. Use `[AppShell].command` when you aren't completely sure that migrations will go smoothly for your changes.
+* **`[MakeMigrationsAndMigrate].command`** is for pushing the changes to the server, running `python manage.py makemigrations && python manage.py migrate`, and pulling the changes from the server. Use `[AppShell].command` when you aren't completely sure that migrations will go smoothly for your changes.
 * **`[Push].command`** is for pushing changes from the local directory into the remote one. You may consider running `[RestartUwsgi].command` thereafter or simply joining the two scripts together.
 * **`[Pull].command`** is for pulling changes from the remote directory into the local one.
 * **`[RestartUwsgi].command`** is for restarting uWSGI on the server for the changes to Django files to take effect.
