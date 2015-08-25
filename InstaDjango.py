@@ -255,7 +255,7 @@ settings_base = """
     WSGI_APPLICATION = "{proj}.wsgi.application"
 
     STATIC_URL = "/static/"
-    STATIC_ROOT = "{remote_dir}/staticroot/"
+    STATIC_ROOT = os.path.join(BASE_DIR, "staticroot/")
 
     TEMPLATES = [
         {{
@@ -567,8 +567,7 @@ def setup_django_project(**kwargs):
     settings = prepare_from_4s_formatting(settings_base)
     settings = settings.\
         format(domain=domain,
-               proj=proj,
-               remote_dir=proj_remote_dir)
+               proj=proj)
     with open(path.join(settings_dir, "base.py"), "w") as f:
         f.write(settings)
     #
