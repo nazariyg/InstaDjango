@@ -16,12 +16,11 @@ req_base = """
     uwsgi
     regex
     psycopg2
-    pytz
     python3-memcached
     django-model-utils
     django-extensions
     django-braces
-    django-floppyforms
+    pytz
 """.\
     format(django_ver=django_ver)
 
@@ -48,14 +47,15 @@ req_production = """
 # Top-level shell scripts.
 
 sync_excl = (
-    "--exclude={proj}_venv --exclude=__pycache__ --exclude=staticroot "
+    "--exclude={proj}_venv --exclude=__pycache__ --exclude=staticroot --exclude=mediaroot "
     "--exclude=uwsgi/pid --exclude=uwsgi/uwsgi.log --exclude=.DS_Store")
 
 sync_script_fn = "[Push].command"
 sync_script = """
     #!/bin/bash -e
 
-    src={local_subdir}
+    srcparent=$( cd "$( dirname "${{BASH_SOURCE[0]}}" )" && pwd )
+    src=$srcparent/{proj}
     sshkey={ssh_key}
 
     dstparent={remote_parent_dir}
@@ -67,13 +67,13 @@ sync_script = """
     syncexcl="%s"
     rsync -az $syncexcl --delete -e "ssh -i $sshkey -p $dstport" $src $dstuserhost:$dstparent
 
-    findexcl="-not -path '*{proj}_venv*' -and -not -path '*uwsgi*'"
-    ssh -i $sshkey -p $dstport $dstuserhost <<EOF
-        chown -R $dstuserown:$dstuserown $dst
-        find $dst $findexcl -type d -print0 | xargs -0 chmod 755
-        find $dst $findexcl -type f -print0 | xargs -0 chmod 644
-        chmod u+x $dst/s $dst/u
-    EOF
+    # findexcl="-not -path '*{proj}_venv*' -and -not -path '*uwsgi*' -and -not -path '*mediaroot*'"
+    # ssh -i $sshkey -p $dstport $dstuserhost <<EOF
+    #     chown -R $dstuserown:$dstuserown $dst
+    #     find $dst $findexcl -type d -print0 | xargs -0 chmod 755
+    #     find $dst $findexcl -type f -print0 | xargs -0 chmod 644
+    #     chmod u+x $dst/s $dst/u
+    # EOF
 """ % sync_excl
 
 restart_uwsgi_script_fn = "[RestartUwsgi].command"
@@ -102,7 +102,7 @@ sync_back_script = """
     srcuserhost={user_host}
     srcport={port}
 
-    dstparent={local_dir}
+    dstparent=$( cd "$( dirname "${{BASH_SOURCE[0]}}" )" && pwd )
     sshkey={ssh_key}
 
     syncexcl="%s"
@@ -113,7 +113,7 @@ make_migrations_script_fn = "[MakeMigrations].command"
 make_migrations_script = """
     #!/bin/bash -e
 
-    srcparent={local_dir}
+    srcparent=$( cd "$( dirname "${{BASH_SOURCE[0]}}" )" && pwd )
     sshkey={ssh_key}
 
     dst={remote_dir}
@@ -136,7 +136,7 @@ make_migrations_and_migrate_script_fn = "[MakeMigrationsAndMigrate].command"
 make_migrations_and_migrate_script = """
     #!/bin/bash -e
 
-    srcparent={local_dir}
+    srcparent=$( cd "$( dirname "${{BASH_SOURCE[0]}}" )" && pwd )
     sshkey={ssh_key}
 
     dst={remote_dir}
@@ -159,7 +159,7 @@ server_shell_script_fn = "[AppShell].command"
 server_shell_script = """
     #!/bin/bash -e
 
-    srcparent={local_dir}
+    srcparent=$( cd "$( dirname "${{BASH_SOURCE[0]}}" )" && pwd )
     sshkey={ssh_key}
 
     dst={remote_dir}
@@ -184,7 +184,7 @@ sublime_project = """
             {{
                 "name": "{proj} Python Builder",
                 "selector": "source.python",
-                "shell_cmd": "/bin/bash {local_dir}/%s && /bin/bash {local_dir}/%s"
+                "shell_cmd": "/bin/bash $project_path/%s && /bin/bash $project_path/%s"
             }}
         ],
         "folders":
@@ -197,7 +197,7 @@ sublime_project = """
     }}
 """ % (sync_script_fn, restart_uwsgi_script_fn)
 # Alternatively: sync, restart uWSGI, and output the server's response into Sublime Text
-# "shell_cmd": "/bin/bash {local_dir}/%s && /bin/bash {local_dir}/%s ; echo -e '--------------------------------\\\\n' ; curl -s {domain} ; echo -e '\\\\n\\\\n--------------------------------'"
+# "shell_cmd": "/bin/bash $project_path/%s && /bin/bash $project_path/%s ; echo -e '--------------------------------\\\\n' ; curl -s {domain} ; echo -e '\\\\n\\\\n--------------------------------'"
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -254,8 +254,11 @@ settings_base = """
     ROOT_URLCONF = "{proj}.urls"
     WSGI_APPLICATION = "{proj}.wsgi.application"
 
-    STATIC_URL = "/static/"
     STATIC_ROOT = os.path.join(BASE_DIR, "staticroot/")
+    STATIC_URL = "/static/"
+
+    MEDIA_ROOT = os.path.join(BASE_DIR, "mediaroot/")
+    MEDIA_URL = "/media/"
 
     TEMPLATES = [
         {{
@@ -279,6 +282,8 @@ settings_base = """
             "LOCATION": ["127.0.0.1:11211"],
         }}
     }}
+
+    ATOMIC_REQUESTS = True
 
 
     # SESSION_COOKIE_SECURE = True
@@ -454,14 +459,13 @@ def setup_django_project(**kwargs):
     if not ssh_key:
         script = script.replace(port_substr, "")
     script = script.\
-        format(local_subdir=proj_local_subdir,
+        format(proj=proj,
                ssh_key=ssh_key,
                remote_parent_dir=proj_remote_parent_dir,
                remote_dir=proj_remote_dir,
                user_host=user_host,
                port=port,
-               user=user,
-               proj=proj)
+               user=user)
     with open(path.join(proj_local_dir, sync_script_fn), "w") as f:
         f.write(script)
     #
@@ -484,7 +488,6 @@ def setup_django_project(**kwargs):
         format(remote_dir=proj_remote_dir,
                user_host=user_host,
                port=port,
-               local_dir=proj_local_dir,
                ssh_key=ssh_key,
                proj=proj)
     with open(path.join(proj_local_dir, sync_back_script_fn), "w") as f:
@@ -494,8 +497,7 @@ def setup_django_project(**kwargs):
     if not ssh_key:
         script = script.replace(port_substr, "")
     script = script.\
-        format(local_dir=proj_local_dir,
-               ssh_key=ssh_key,
+        format(ssh_key=ssh_key,
                remote_dir=proj_remote_dir,
                user_host=user_host,
                port=port,
@@ -507,8 +509,7 @@ def setup_django_project(**kwargs):
     if not ssh_key:
         script = script.replace(port_substr, "")
     script = script.\
-        format(local_dir=proj_local_dir,
-               ssh_key=ssh_key,
+        format(ssh_key=ssh_key,
                remote_dir=proj_remote_dir,
                user_host=user_host,
                port=port,
@@ -520,8 +521,7 @@ def setup_django_project(**kwargs):
     if not ssh_key:
         script = script.replace(port_substr, "")
     script = script.\
-        format(local_dir=proj_local_dir,
-               ssh_key=ssh_key,
+        format(ssh_key=ssh_key,
                remote_dir=proj_remote_dir,
                user_host=user_host,
                port=port)
@@ -537,8 +537,7 @@ def setup_django_project(**kwargs):
                port=port,
                ssh_key=ssh_key,
                user_host=user_host,
-               domain=domain,
-               local_dir=proj_local_dir)
+               domain=domain)
     with open(path.join(proj_local_dir, "{}.sublime-project".format(proj)), "w") as f:
         f.write(script)
 
@@ -643,6 +642,7 @@ def setup_django_project(**kwargs):
         pip install -r requirements/{insta_type}.txt
         django-admin startproject {proj} .
         mkdir staticroot
+        mkdir mediaroot
         chmod u+x s u
         cd uwsgi
         chmod u+x up down re
