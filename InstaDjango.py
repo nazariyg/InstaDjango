@@ -14,13 +14,12 @@ req_base_fn = "base.txt"
 req_base = """
     Django=={django_ver}
     uwsgi
-    regex
     psycopg2
+    pytz
     python3-memcached
     django-model-utils
     django-extensions
     django-braces
-    pytz
 """.\
     format(django_ver=django_ver)
 
